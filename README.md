@@ -213,3 +213,6 @@ Recorded in [`docs/BACKLOG.md`](docs/BACKLOG.md). Key ones:
 
 This project was built with AI assistance (Claude for planning, product ownership and review; Cursor for implementation;
 ChatGPT for a UI reference mockup). The complete, unedited session logs are in [`ai-log/`](ai-log/).
+
+
+**Live demo:** https://task-list-app-rho.vercel.app
