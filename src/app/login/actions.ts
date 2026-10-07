@@ -1,13 +1,11 @@
 "use server";
 
 import { redirect } from "next/navigation";
+import { AUTH_ERRORS } from "@/lib/constants/auth";
 import { createClient } from "@/lib/supabase/server";
+import type { AuthState } from "@/lib/types/auth";
 
-export type AuthState = {
-  error: string | null;
-  /** Changes on each failed submit so the UI can dismiss stale messages. */
-  errorId?: number;
-};
+export type { AuthState };
 
 function authError(message: string): AuthState {
   return { error: message, errorId: Date.now() };
@@ -17,16 +15,16 @@ function readableAuthError(message: string) {
   const lower = message.toLowerCase();
 
   if (lower.includes("invalid login") || lower.includes("invalid credentials")) {
-    return "Wrong email or password.";
+    return AUTH_ERRORS.wrongCredentials;
   }
   if (lower.includes("already registered")) {
-    return "An account with this email already exists. Sign in instead.";
+    return AUTH_ERRORS.alreadyRegistered;
   }
   if (lower.includes("at least")) {
-    return "Password must be at least 6 characters.";
+    return AUTH_ERRORS.passwordTooShort;
   }
   if (lower.includes("valid email") || lower.includes("invalid format")) {
-    return "Please enter a valid email address.";
+    return AUTH_ERRORS.invalidEmail;
   }
 
   return message;
@@ -41,7 +39,7 @@ export async function authenticate(
   const mode = String(formData.get("mode") ?? "signin");
 
   if (!email || !password) {
-    return authError("Email and password are required.");
+    return authError(AUTH_ERRORS.missingFields);
   }
 
   const supabase = await createClient();

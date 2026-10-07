@@ -1,35 +1,50 @@
-import { redirect } from "next/navigation";
-import { Button } from "@/components/ui/button";
+import { TasksView } from "@/app/tasks/_components/tasks-view";
+import { PageContainer } from "@/components/page-container";
+import { TASKS_PAGE } from "@/lib/constants/tasks";
+import {
+  countActiveTasks,
+  fetchTasks,
+  filtersAreActive,
+  parseTaskFilters,
+} from "@/lib/tasks/queries";
 import { createClient } from "@/lib/supabase/server";
-import { signOut } from "@/app/login/actions";
+import type { TasksSearchParams } from "@/lib/types/tasks";
 
-export default async function TasksPage() {
+type TasksPageProps = {
+  searchParams: Promise<TasksSearchParams>;
+};
+
+export default async function TasksPage({ searchParams }: TasksPageProps) {
+  const params = await searchParams;
+  const filters = parseTaskFilters(params);
+
   const supabase = await createClient();
-  const { data } = await supabase.auth.getClaims();
+  const [{ tasks, error }, totalActive] = await Promise.all([
+    fetchTasks(supabase, filters),
+    countActiveTasks(supabase),
+  ]);
 
-  if (!data?.claims) {
-    redirect("/login");
+  if (error) {
+    throw error;
   }
 
-  const email =
-    typeof data.claims.email === "string" ? data.claims.email : "Signed in";
+  const hasFilters = filtersAreActive(filters);
 
   return (
-    <div className="flex min-h-full flex-1 flex-col">
-      <header className="flex items-center justify-between border-b border-border px-6 py-3">
-        <p className="font-heading text-base font-semibold">Task List</p>
-        <div className="flex items-center gap-3">
-          <span className="text-sm text-muted-foreground">{email}</span>
-          <form action={signOut}>
-            <Button type="submit" variant="outline" size="sm">
-              Sign out
-            </Button>
-          </form>
+    <main className="flex flex-1 flex-col py-6">
+      <PageContainer className="flex flex-col gap-6">
+        <div>
+          <h1>{TASKS_PAGE.title}</h1>
+          <p className="mt-1 text-muted-foreground">{TASKS_PAGE.subtitle}</p>
         </div>
-      </header>
-      <main className="flex flex-1 items-center justify-center p-6">
-        <p className="text-muted-foreground">Task list coming in US-3</p>
-      </main>
-    </div>
+
+        <TasksView
+          tasks={tasks}
+          filters={filters}
+          hasFilters={hasFilters}
+          hasAnyTasks={totalActive > 0}
+        />
+      </PageContainer>
+    </main>
   );
 }
