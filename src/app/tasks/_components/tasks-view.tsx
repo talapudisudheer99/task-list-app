@@ -57,8 +57,9 @@ export function TasksView({
   return (
     <>
       <TasksToolbar
-        key={filters.q}
         filters={filters}
+        hasFilters={hasFilters}
+        onClearFilters={clearFilters}
         onNewTask={openCreate}
         onImportCsv={() => setImportOpen(true)}
       />

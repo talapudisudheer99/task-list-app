@@ -5,6 +5,10 @@ export const TASKS_PAGE = {
   subtitle: "Stay organized and get things done.",
   taskCount: (count: number) =>
     count === 1 ? "1 task" : `${count} tasks`,
+  taskCountFiltered: (shown: number, total: number) =>
+    shown === total
+      ? TASKS_PAGE.taskCount(total)
+      : `Showing ${shown} of ${total} tasks`,
 } as const;
 
 export const TASKS_TOOLBAR = {
@@ -14,6 +18,7 @@ export const TASKS_TOOLBAR = {
   filterAll: "All",
   importCsv: "Import CSV",
   newTask: "New task",
+  clearSearch: "Clear search",
 } as const;
 
 export const TASKS_TABLE = {
@@ -23,6 +28,7 @@ export const TASKS_TABLE = {
   status: "Status",
   actions: "Actions",
   noDueDate: "—",
+  overdue: "Overdue",
 } as const;
 
 export const TASK_STATUS_LABELS: Record<TaskStatus, string> = {

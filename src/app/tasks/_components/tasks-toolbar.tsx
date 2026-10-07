@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
-import { PlusIcon, SearchIcon, UploadIcon } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
+import { PlusIcon, SearchIcon, UploadIcon, XIcon } from "lucide-react";
 import { TasksSurface } from "@/app/tasks/_components/tasks-surface";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -13,54 +13,101 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { TASKS_TOOLBAR } from "@/lib/constants/tasks";
+import { TASKS_EMPTY, TASKS_TOOLBAR } from "@/lib/constants/tasks";
 import { statusLabel } from "@/lib/tasks/queries";
 import type { TaskFilters, TaskStatus } from "@/lib/types/tasks";
 
 type TasksToolbarProps = {
   filters: TaskFilters;
+  hasFilters: boolean;
+  onClearFilters: () => void;
   onNewTask: () => void;
   onImportCsv: () => void;
 };
 
+function buildTasksHref(filters: TaskFilters, q: string): string {
+  const params = new URLSearchParams();
+  const trimmed = q.trim();
+  if (trimmed) {
+    params.set("q", trimmed);
+  }
+  if (filters.status !== "all") {
+    params.set("status", filters.status);
+  }
+  if (filters.priority !== "all") {
+    params.set("priority", String(filters.priority));
+  }
+  const qs = params.toString();
+  return qs ? `/tasks?${qs}` : "/tasks";
+}
+
 export function TasksToolbar({
   filters,
+  hasFilters,
+  onClearFilters,
   onNewTask,
   onImportCsv,
 }: TasksToolbarProps) {
   const router = useRouter();
-  const searchParams = useSearchParams();
   const [search, setSearch] = useState(filters.q);
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const { status, priority, q: urlQ } = filters;
 
   useEffect(() => {
     const trimmed = search.trim();
-    if (trimmed === filters.q) {
+    if (trimmed === urlQ) {
       return;
     }
 
-    const timer = window.setTimeout(() => {
-      const params = new URLSearchParams(searchParams.toString());
-      if (trimmed) {
-        params.set("q", trimmed);
-      } else {
-        params.delete("q");
-      }
-      const qs = params.toString();
-      router.replace(qs ? `/tasks?${qs}` : "/tasks");
+    if (debounceRef.current) {
+      clearTimeout(debounceRef.current);
+    }
+
+    debounceRef.current = setTimeout(() => {
+      debounceRef.current = null;
+      router.replace(
+        buildTasksHref({ q: urlQ, status, priority }, trimmed),
+        { scroll: false },
+      );
     }, 300);
 
-    return () => window.clearTimeout(timer);
-  }, [search, filters.q, router, searchParams]);
+    return () => {
+      if (debounceRef.current) {
+        clearTimeout(debounceRef.current);
+        debounceRef.current = null;
+      }
+    };
+  }, [search, urlQ, status, priority, router]);
 
-  function updateParam(key: string, value: string | null) {
-    const params = new URLSearchParams(searchParams.toString());
-    if (value && value !== "all") {
-      params.set(key, value);
+  function updateParam(key: "status" | "priority", value: string | null) {
+    const next: TaskFilters = { ...filters };
+    if (key === "status") {
+      next.status =
+        value === "todo" || value === "in_progress" || value === "done"
+          ? value
+          : "all";
+    } else if (value && value !== "all") {
+      const n = Number(value);
+      next.priority =
+        Number.isInteger(n) && n >= 1 && n <= 5 ? n : "all";
     } else {
-      params.delete(key);
+      next.priority = "all";
     }
-    const qs = params.toString();
-    router.replace(qs ? `/tasks?${qs}` : "/tasks");
+    router.replace(buildTasksHref(next, search), { scroll: false });
+  }
+
+  function clearSearch() {
+    setSearch("");
+    if (urlQ) {
+      router.replace(buildTasksHref({ q: urlQ, status, priority }, ""), {
+        scroll: false,
+      });
+    }
+  }
+
+  function handleClearAllFilters() {
+    setSearch("");
+    onClearFilters();
   }
 
   return (
@@ -72,12 +119,27 @@ export function TasksToolbar({
             aria-hidden
           />
           <Input
-            type="search"
+            type="text"
+            role="searchbox"
+            aria-label={TASKS_TOOLBAR.searchPlaceholder}
             placeholder={TASKS_TOOLBAR.searchPlaceholder}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="h-10 w-full border-border/80 bg-muted/30 pl-9"
+            autoComplete="off"
+            className="h-10 w-full border-border/80 bg-muted/30 pr-9 pl-9"
           />
+          {search.length > 0 ? (
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon-sm"
+              className="absolute top-1/2 right-1.5 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+              onClick={clearSearch}
+              aria-label={TASKS_TOOLBAR.clearSearch}
+            >
+              <XIcon className="size-4" />
+            </Button>
+          ) : null}
         </div>
 
         <div className="flex flex-wrap items-center gap-2 sm:gap-3">
@@ -132,6 +194,17 @@ export function TasksToolbar({
               ))}
             </SelectContent>
           </Select>
+
+          {hasFilters ? (
+            <Button
+              type="button"
+              variant="ghost"
+              className="h-10 text-muted-foreground"
+              onClick={handleClearAllFilters}
+            >
+              {TASKS_EMPTY.clearFilters}
+            </Button>
+          ) : null}
 
           <Button type="button" variant="outline" className="h-10" onClick={onImportCsv}>
             <UploadIcon data-icon="inline-start" className="size-4" />

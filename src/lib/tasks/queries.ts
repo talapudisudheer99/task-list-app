@@ -93,6 +93,22 @@ export function statusLabel(status: TaskStatus): string {
   return TASK_STATUS_LABELS[status];
 }
 
+/** True when due date is before today (local) and the task is not done. */
+export function isPastDue(
+  isoDate: string | null,
+  status: TaskStatus,
+): boolean {
+  if (!isoDate || status === "done") {
+    return false;
+  }
+  const [y, m, d] = isoDate.split("-").map(Number);
+  const due = new Date(y, m - 1, d);
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  due.setHours(0, 0, 0, 0);
+  return due < today;
+}
+
 export function formatDueDate(isoDate: string | null): string {
   if (!isoDate) {
     return TASKS_TABLE.noDueDate;

@@ -38,9 +38,11 @@ export default async function TasksPage({ searchParams }: TasksPageProps) {
             <h1 className="text-3xl tracking-tight">{TASKS_PAGE.title}</h1>
             <p className="mt-1.5 text-muted-foreground">{TASKS_PAGE.subtitle}</p>
           </div>
-          {tasks.length > 0 ? (
+          {totalActive > 0 ? (
             <p className="text-sm font-medium text-muted-foreground tabular-nums">
-              {TASKS_PAGE.taskCount(tasks.length)}
+              {hasFilters
+                ? TASKS_PAGE.taskCountFiltered(tasks.length, totalActive)
+                : TASKS_PAGE.taskCount(tasks.length)}
             </p>
           ) : null}
         </div>

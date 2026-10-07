@@ -18,6 +18,7 @@ import {
 import { TASKS_TABLE, TASK_TOASTS } from "@/lib/constants/tasks";
 import {
   formatDueDate,
+  isPastDue,
   priorityBadgeClass,
   statusBadgeClass,
   statusLabel,
@@ -76,6 +77,7 @@ export function TasksTable({ tasks, onEdit, onDelete }: TasksTableProps) {
         <TableBody>
           {tasks.map((task) => {
             const isDone = task.status === "done";
+            const pastDue = isPastDue(task.due_date, task.status);
             return (
               <TableRow
                 key={task.id}
@@ -117,11 +119,15 @@ export function TasksTable({ tasks, onEdit, onDelete }: TasksTableProps) {
                 </TableCell>
                 <TableCell
                   className={cn(
-                    "px-4 py-3 text-muted-foreground",
-                    isDone && "line-through opacity-70",
+                    "px-4 py-3",
+                    isDone && "text-muted-foreground line-through opacity-70",
+                    !isDone && pastDue && "font-medium text-destructive",
+                    !isDone && !pastDue && "text-muted-foreground",
                   )}
                 >
-                  {formatDueDate(task.due_date)}
+                  <span title={pastDue ? TASKS_TABLE.overdue : undefined}>
+                    {formatDueDate(task.due_date)}
+                  </span>
                 </TableCell>
                 <TableCell className="px-4 py-3">
                   <Badge
