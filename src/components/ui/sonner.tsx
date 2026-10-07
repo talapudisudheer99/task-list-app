@@ -1,46 +1,76 @@
-"use client"
+"use client";
 
-import { Toaster as Sonner, type ToasterProps } from "sonner"
-import { CircleCheckIcon, InfoIcon, TriangleAlertIcon, OctagonXIcon, Loader2Icon } from "lucide-react"
+import "sonner/dist/styles.css";
+
+import {
+  CircleCheckIcon,
+  InfoIcon,
+  Loader2Icon,
+  OctagonXIcon,
+  TriangleAlertIcon,
+} from "lucide-react";
+import { Toaster as Sonner, type ToasterProps } from "sonner";
+
+function ToastIconWrap({
+  children,
+  variant,
+}: {
+  children: React.ReactNode;
+  variant: "success" | "error" | "warning" | "info" | "loading";
+}) {
+  return (
+    <span className={`app-toast-icon app-toast-icon--${variant}`}>
+      {children}
+    </span>
+  );
+}
 
 const Toaster = ({ ...props }: ToasterProps) => {
   return (
     <Sonner
       theme="light"
-      className="toaster group"
+      className="app-toaster"
+      offset={16}
+      gap={12}
+      visibleToasts={4}
+      expand
       icons={{
         success: (
-          <CircleCheckIcon className="size-4" />
+          <ToastIconWrap variant="success">
+            <CircleCheckIcon className="size-[1.125rem]" strokeWidth={2.5} />
+          </ToastIconWrap>
         ),
         info: (
-          <InfoIcon className="size-4" />
+          <ToastIconWrap variant="info">
+            <InfoIcon className="size-[1.125rem]" strokeWidth={2.5} />
+          </ToastIconWrap>
         ),
         warning: (
-          <TriangleAlertIcon className="size-4" />
+          <ToastIconWrap variant="warning">
+            <TriangleAlertIcon className="size-[1.125rem]" strokeWidth={2.5} />
+          </ToastIconWrap>
         ),
         error: (
-          <OctagonXIcon className="size-4" />
+          <ToastIconWrap variant="error">
+            <OctagonXIcon className="size-[1.125rem]" strokeWidth={2.5} />
+          </ToastIconWrap>
         ),
         loading: (
-          <Loader2Icon className="size-4 animate-spin" />
+          <ToastIconWrap variant="loading">
+            <Loader2Icon className="size-[1.125rem] animate-spin" strokeWidth={2.5} />
+          </ToastIconWrap>
         ),
       }}
-      style={
-        {
-          "--normal-bg": "var(--popover)",
-          "--normal-text": "var(--popover-foreground)",
-          "--normal-border": "var(--border)",
-          "--border-radius": "var(--radius)",
-        } as React.CSSProperties
-      }
       toastOptions={{
         classNames: {
-          toast: "cn-toast",
+          toast: "app-toast",
+          title: "app-toast-title",
+          description: "app-toast-description",
         },
       }}
       {...props}
     />
-  )
-}
+  );
+};
 
-export { Toaster }
+export { Toaster };
