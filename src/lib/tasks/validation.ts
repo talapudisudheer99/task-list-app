@@ -68,7 +68,7 @@ export function isRealCalendarDate(yyyyMmDd: string): boolean {
   );
 }
 
-function validateStatus(value: unknown): string | null {
+export function validateStatus(value: unknown): string | null {
   if (value !== "todo" && value !== "in_progress" && value !== "done") {
     return TASK_VALIDATION_ERRORS.statusInvalid;
   }

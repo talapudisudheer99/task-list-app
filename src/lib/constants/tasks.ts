@@ -97,6 +97,7 @@ export const TASK_TOASTS = {
   deleted: "Task deleted",
   completed: "Task completed",
   markedTodo: "Task marked as to do",
+  statusUpdated: "Status updated",
 } as const;
 
 export const TASK_ACTION_ERRORS = {

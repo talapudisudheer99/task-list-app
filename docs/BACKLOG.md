@@ -75,7 +75,7 @@ As a user, I can only ever see and change my own tasks.
 - [ ] AC1: Title required, max 200 characters.
 - [ ] AC2: Priority is a whole number 1–5, default 3.
 - [ ] AC3: Due date and notes are optional.
-- [ ] AC4: New task has status `todo`.
+- [ ] AC4: New task has status `todo` by default (user may pick another status).
 - [ ] AC5: Invalid input shows a field error; nothing crashes.
 
 ### US-4 Edit task
@@ -85,6 +85,7 @@ As a user, I can only ever see and change my own tasks.
 ### US-5 Complete task
 - [ ] AC1: One click toggles a task between `todo` and `done`.
 - [ ] AC2: Completed tasks are visually distinct.
+- [ ] AC3: Status (To do / In progress / Done) can be changed directly from the list via a status dropdown.
 
 ### US-6 Soft delete
 - [ ] AC1: Delete sets `deleted_at` (row stays in DB).

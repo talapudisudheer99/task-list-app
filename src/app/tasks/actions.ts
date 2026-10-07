@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import { TASK_ACTION_ERRORS } from "@/lib/constants/tasks";
 import { createClient } from "@/lib/supabase/server";
 import type { TaskActionResult, TaskFormValues, TaskStatus } from "@/lib/types/tasks";
-import { validateTaskInput } from "@/lib/tasks/validation";
+import { validateStatus, validateTaskInput } from "@/lib/tasks/validation";
 
 export type { TaskActionResult };
 
@@ -16,13 +16,15 @@ function mapDbError(error: { code?: string; message: string }): string {
 }
 
 export async function createTask(
-  values: Omit<TaskFormValues, "status">,
+  values: TaskFormValues,
 ): Promise<TaskActionResult> {
   const parsed = validateTaskInput({
     title: values.title,
     notes: values.notes,
     dueDate: values.dueDate,
     priority: values.priority,
+    status: values.status,
+    requireStatus: true,
   });
 
   if (!parsed.ok) {
@@ -39,7 +41,7 @@ export async function createTask(
     notes: parsed.value.notes,
     due_date: parsed.value.dueDate,
     priority: parsed.value.priority,
-    status: "todo",
+    status: parsed.value.status,
   });
 
   if (error) {
@@ -86,6 +88,35 @@ export async function updateTask(
 
   if (error) {
     return { ok: false, message: mapDbError(error) };
+  }
+
+  revalidatePath("/tasks");
+  return { ok: true };
+}
+
+export async function updateTaskStatus(
+  id: string,
+  status: TaskStatus,
+): Promise<TaskActionResult> {
+  const statusError = validateStatus(status);
+  if (statusError) {
+    return { ok: false, message: statusError };
+  }
+
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("tasks")
+    .update({ status })
+    .eq("id", id)
+    .is("deleted_at", null)
+    .select("id")
+    .maybeSingle();
+
+  if (error) {
+    return { ok: false, message: mapDbError(error) };
+  }
+  if (!data) {
+    return { ok: false, message: TASK_ACTION_ERRORS.notFound };
   }
 
   revalidatePath("/tasks");

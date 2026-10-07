@@ -3,7 +3,8 @@
 import { useState } from "react";
 import { toast } from "sonner";
 import { PencilIcon, Trash2Icon } from "lucide-react";
-import { toggleComplete } from "@/app/tasks/actions";
+import { toggleComplete, updateTaskStatus } from "@/app/tasks/actions";
+import { TaskStatusSelect } from "@/app/tasks/_components/task-status-select";
 import { TasksSurface } from "@/app/tasks/_components/tasks-surface";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -20,10 +21,8 @@ import {
   formatDueDate,
   isPastDue,
   priorityBadgeClass,
-  statusBadgeClass,
-  statusLabel,
 } from "@/lib/tasks/queries";
-import type { Task } from "@/lib/types/tasks";
+import type { Task, TaskStatus } from "@/lib/types/tasks";
 import { cn } from "@/lib/utils";
 
 type TasksTableProps = {
@@ -34,6 +33,7 @@ type TasksTableProps = {
 
 export function TasksTable({ tasks, onEdit, onDelete }: TasksTableProps) {
   const [togglingId, setTogglingId] = useState<string | null>(null);
+  const [statusUpdatingId, setStatusUpdatingId] = useState<string | null>(null);
 
   async function handleToggle(task: Task) {
     setTogglingId(task.id);
@@ -46,6 +46,22 @@ export function TasksTable({ tasks, onEdit, onDelete }: TasksTableProps) {
           ? TASK_TOASTS.markedTodo
           : TASK_TOASTS.completed,
       );
+    } else {
+      toast.error(result.message);
+    }
+  }
+
+  async function handleStatusChange(task: Task, status: TaskStatus) {
+    if (status === task.status) {
+      return;
+    }
+
+    setStatusUpdatingId(task.id);
+    const result = await updateTaskStatus(task.id, status);
+    setStatusUpdatingId(null);
+
+    if (result.ok) {
+      toast.success(TASK_TOASTS.statusUpdated);
     } else {
       toast.error(result.message);
     }
@@ -88,7 +104,9 @@ export function TasksTable({ tasks, onEdit, onDelete }: TasksTableProps) {
                     type="checkbox"
                     className="size-4 cursor-pointer rounded border-input accent-primary transition-shadow focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                     checked={isDone}
-                    disabled={togglingId === task.id}
+                    disabled={
+                      togglingId === task.id || statusUpdatingId === task.id
+                    }
                     onChange={() => handleToggle(task)}
                     aria-label={
                       isDone
@@ -140,15 +158,14 @@ export function TasksTable({ tasks, onEdit, onDelete }: TasksTableProps) {
                   </Badge>
                 </TableCell>
                 <TableCell className="px-4 py-3">
-                  <Badge
-                    variant="outline"
-                    className={cn(
-                      "border-transparent font-medium",
-                      statusBadgeClass(task.status),
-                    )}
-                  >
-                    {statusLabel(task.status)}
-                  </Badge>
+                  <TaskStatusSelect
+                    taskTitle={task.title}
+                    value={task.status}
+                    disabled={
+                      statusUpdatingId === task.id || togglingId === task.id
+                    }
+                    onValueChange={(status) => handleStatusChange(task, status)}
+                  />
                 </TableCell>
                 <TableCell className="px-4 py-3 text-right">
                   <div className="flex justify-end gap-0.5 opacity-100 sm:opacity-80 sm:group-hover:opacity-100">

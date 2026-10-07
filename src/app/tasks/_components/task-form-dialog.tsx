@@ -116,7 +116,7 @@ function TaskFormBody({
       dueDate: values.dueDate,
       priority: values.priority,
       status: values.status,
-      requireStatus: mode === "edit",
+      requireStatus: true,
     });
 
     if (!parsed.ok) {
@@ -128,12 +128,7 @@ function TaskFormBody({
 
     const result =
       mode === "create"
-        ? await createTask({
-            title: values.title,
-            notes: values.notes,
-            dueDate: values.dueDate,
-            priority: values.priority,
-          })
+        ? await createTask(values)
         : await updateTask(task!.id, values);
 
     setPending(false);
@@ -254,33 +249,31 @@ function TaskFormBody({
           </div>
         </div>
 
-        {mode === "edit" ? (
-          <div className="flex flex-col gap-2">
-            <Label htmlFor="task-status">{TASK_FORM.statusLabel}</Label>
-            <Select
-              value={values.status}
-              onValueChange={(v) => {
-                if (v) {
-                  setField("status", v as TaskStatus);
-                }
-              }}
-            >
-              <SelectTrigger id="task-status" className={SELECT_TRIGGER_CLASS}>
-                <SelectValue placeholder={TASK_FORM.statusPlaceholder} />
-              </SelectTrigger>
-              <SelectContent>
-                {(["todo", "in_progress", "done"] as TaskStatus[]).map((s) => (
-                  <SelectItem key={s} value={s}>
-                    {statusLabel(s)}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            {fieldErrors.status ? (
-              <p className="text-xs text-destructive">{fieldErrors.status}</p>
-            ) : null}
-          </div>
-        ) : null}
+        <div className="flex flex-col gap-2">
+          <Label htmlFor="task-status">{TASK_FORM.statusLabel}</Label>
+          <Select
+            value={values.status}
+            onValueChange={(v) => {
+              if (v) {
+                setField("status", v as TaskStatus);
+              }
+            }}
+          >
+            <SelectTrigger id="task-status" className={SELECT_TRIGGER_CLASS}>
+              <SelectValue placeholder={TASK_FORM.statusPlaceholder} />
+            </SelectTrigger>
+            <SelectContent>
+              {(["todo", "in_progress", "done"] as TaskStatus[]).map((s) => (
+                <SelectItem key={s} value={s}>
+                  {statusLabel(s)}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          {fieldErrors.status ? (
+            <p className="text-xs text-destructive">{fieldErrors.status}</p>
+          ) : null}
+        </div>
       </form>
 
       <DialogFooter>
