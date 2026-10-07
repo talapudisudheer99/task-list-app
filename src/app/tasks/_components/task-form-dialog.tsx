@@ -21,13 +21,34 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { TASK_FORM, TASK_TOASTS } from "@/lib/constants/tasks";
+import {
+  TASK_FORM,
+  TASK_PRIORITY_OPTIONS,
+  TASK_TOASTS,
+} from "@/lib/constants/tasks";
 import { statusLabel } from "@/lib/tasks/queries";
 import { validateTaskInput } from "@/lib/tasks/validation";
 import type { Task, TaskFormValues, TaskStatus } from "@/lib/types/tasks";
 import type { FieldErrors } from "@/lib/types/tasks-validation";
+import { cn } from "@/lib/utils";
 
 const FORM_ID = "task-form";
+
+const FIELD_HEIGHT_CLASS = "h-10 min-h-10 w-full py-0";
+
+/** Native date pickers add extra internal padding in WebKit. */
+const DATE_INPUT_CLASS = cn(
+  FIELD_HEIGHT_CLASS,
+  "max-h-10 overflow-hidden text-sm leading-10",
+  "[&::-webkit-datetime-edit]:p-0 [&::-webkit-datetime-edit]:leading-10",
+  "[&::-webkit-datetime-edit-fields-wrapper]:p-0",
+  "[&::-webkit-calendar-picker-indicator]:ml-0 [&::-webkit-calendar-picker-indicator]:size-4 [&::-webkit-calendar-picker-indicator]:opacity-60",
+);
+
+const SELECT_TRIGGER_CLASS = cn(
+  FIELD_HEIGHT_CLASS,
+  "text-sm leading-10 data-[size=default]:h-10",
+);
 
 type TaskFormDialogProps = {
   mode: "create" | "edit";
@@ -152,6 +173,7 @@ function TaskFormBody({
             id="task-title"
             value={values.title}
             onChange={(e) => setField("title", e.target.value)}
+            placeholder={TASK_FORM.titlePlaceholder}
             aria-invalid={Boolean(fieldErrors.title)}
             className="h-10"
           />
@@ -166,30 +188,44 @@ function TaskFormBody({
             id="task-notes"
             value={values.notes}
             onChange={(e) => setField("notes", e.target.value)}
+            placeholder={TASK_FORM.notesPlaceholder}
             rows={3}
             className="min-h-20"
           />
         </div>
 
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-          <div className="flex min-w-0 flex-col gap-2">
-            <Label htmlFor="task-due">{TASK_FORM.dueDateLabel}</Label>
-            <Input
-              id="task-due"
-              type="date"
-              value={values.dueDate}
-              onChange={(e) => setField("dueDate", e.target.value)}
-              aria-invalid={Boolean(fieldErrors.dueDate)}
-              className="h-10"
-            />
-            {fieldErrors.dueDate ? (
-              <p className="text-xs text-destructive">{fieldErrors.dueDate}</p>
-            ) : null}
-          </div>
+        <div className="flex flex-col gap-3">
+          <p
+            id="task-scheduling-hint"
+            className="text-xs leading-relaxed text-muted-foreground"
+          >
+            {TASK_FORM.schedulingHint}
+          </p>
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:items-start">
+            <div className="flex min-w-0 flex-col gap-2">
+              <Label htmlFor="task-due">
+                {TASK_FORM.dueDateLabel}{" "}
+                <span className="font-normal text-muted-foreground">
+                  ({TASK_FORM.dueDateOptional})
+                </span>
+              </Label>
+              <Input
+                id="task-due"
+                type="date"
+                value={values.dueDate}
+                onChange={(e) => setField("dueDate", e.target.value)}
+                aria-invalid={Boolean(fieldErrors.dueDate)}
+                aria-describedby="task-scheduling-hint"
+                className={DATE_INPUT_CLASS}
+              />
+              {fieldErrors.dueDate ? (
+                <p className="text-xs text-destructive">{fieldErrors.dueDate}</p>
+              ) : null}
+            </div>
 
-          <div className="flex min-w-0 flex-col gap-2">
-            <Label htmlFor="task-priority">{TASK_FORM.priorityLabel}</Label>
-            <Select
+            <div className="flex min-w-0 flex-col gap-2">
+              <Label htmlFor="task-priority">{TASK_FORM.priorityLabel}</Label>
+              <Select
               value={String(values.priority)}
               onValueChange={(v) => {
                 if (v) {
@@ -197,13 +233,16 @@ function TaskFormBody({
                 }
               }}
             >
-              <SelectTrigger id="task-priority" className="h-10 w-full">
-                <SelectValue />
+              <SelectTrigger id="task-priority" className={SELECT_TRIGGER_CLASS}>
+                <SelectValue placeholder={TASK_FORM.priorityPlaceholder}>
+                  {TASK_PRIORITY_OPTIONS[values.priority as 1 | 2 | 3 | 4 | 5]
+                    ?.label ?? values.priority}
+                </SelectValue>
               </SelectTrigger>
               <SelectContent>
-                {[1, 2, 3, 4, 5].map((n) => (
+                {([1, 2, 3, 4, 5] as const).map((n) => (
                   <SelectItem key={n} value={String(n)}>
-                    {n}
+                    {TASK_PRIORITY_OPTIONS[n].label}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -211,6 +250,7 @@ function TaskFormBody({
             {fieldErrors.priority ? (
               <p className="text-xs text-destructive">{fieldErrors.priority}</p>
             ) : null}
+            </div>
           </div>
         </div>
 
@@ -225,8 +265,8 @@ function TaskFormBody({
                 }
               }}
             >
-              <SelectTrigger id="task-status" className="h-10 w-full">
-                <SelectValue />
+              <SelectTrigger id="task-status" className={SELECT_TRIGGER_CLASS}>
+                <SelectValue placeholder={TASK_FORM.statusPlaceholder} />
               </SelectTrigger>
               <SelectContent>
                 {(["todo", "in_progress", "done"] as TaskStatus[]).map((s) => (

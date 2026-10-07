@@ -4,6 +4,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { PencilIcon, Trash2Icon } from "lucide-react";
 import { toggleComplete } from "@/app/tasks/actions";
+import { TasksSurface } from "@/app/tasks/_components/tasks-surface";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -50,107 +51,128 @@ export function TasksTable({ tasks, onEdit, onDelete }: TasksTableProps) {
   }
 
   return (
-    <Table className="table-fixed">
-      <TableHeader>
-        <TableRow>
-          <TableHead className="w-10" />
-          <TableHead>{TASKS_TABLE.title}</TableHead>
-          <TableHead className="w-32">{TASKS_TABLE.dueDate}</TableHead>
-          <TableHead className="w-24">{TASKS_TABLE.priority}</TableHead>
-          <TableHead className="w-28">{TASKS_TABLE.status}</TableHead>
-          <TableHead className="w-24 text-right">{TASKS_TABLE.actions}</TableHead>
-        </TableRow>
-      </TableHeader>
-      <TableBody>
-        {tasks.map((task) => {
-          const isDone = task.status === "done";
-          return (
-            <TableRow key={task.id}>
-              <TableCell>
-                <input
-                  type="checkbox"
-                  className="size-4 rounded border-input accent-primary"
-                  checked={isDone}
-                  disabled={togglingId === task.id}
-                  onChange={() => handleToggle(task)}
-                  aria-label={
-                    isDone
-                      ? `Mark "${task.title}" as to do`
-                      : `Complete "${task.title}"`
-                  }
-                />
-              </TableCell>
-              <TableCell className="whitespace-normal">
-                <p
-                  className={cn(
-                    "font-medium",
-                    isDone && "text-muted-foreground line-through",
-                  )}
-                >
-                  {task.title}
-                </p>
-                {task.notes ? (
+    <TasksSurface>
+      <Table className="table-fixed">
+        <TableHeader>
+          <TableRow className="border-border/80 hover:bg-transparent">
+            <TableHead className="w-12 bg-muted/40 px-4" />
+            <TableHead className="bg-muted/40 px-4 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+              {TASKS_TABLE.title}
+            </TableHead>
+            <TableHead className="w-36 bg-muted/40 px-4 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+              {TASKS_TABLE.dueDate}
+            </TableHead>
+            <TableHead className="w-28 bg-muted/40 px-4 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+              {TASKS_TABLE.priority}
+            </TableHead>
+            <TableHead className="w-32 bg-muted/40 px-4 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+              {TASKS_TABLE.status}
+            </TableHead>
+            <TableHead className="w-28 bg-muted/40 px-4 text-right text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+              {TASKS_TABLE.actions}
+            </TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {tasks.map((task) => {
+            const isDone = task.status === "done";
+            return (
+              <TableRow
+                key={task.id}
+                className="group border-border/60 transition-colors hover:bg-muted/25"
+              >
+                <TableCell className="px-4 py-3">
+                  <input
+                    type="checkbox"
+                    className="size-4 cursor-pointer rounded border-input accent-primary transition-shadow focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                    checked={isDone}
+                    disabled={togglingId === task.id}
+                    onChange={() => handleToggle(task)}
+                    aria-label={
+                      isDone
+                        ? `Mark "${task.title}" as to do`
+                        : `Complete "${task.title}"`
+                    }
+                  />
+                </TableCell>
+                <TableCell className="whitespace-normal px-4 py-3">
                   <p
                     className={cn(
-                      "mt-0.5 line-clamp-2 text-xs text-muted-foreground",
-                      isDone && "line-through",
+                      "font-medium leading-snug",
+                      isDone && "text-muted-foreground line-through",
                     )}
                   >
-                    {task.notes}
+                    {task.title}
                   </p>
-                ) : null}
-              </TableCell>
-              <TableCell
-                className={cn(isDone && "text-muted-foreground line-through")}
-              >
-                {formatDueDate(task.due_date)}
-              </TableCell>
-              <TableCell>
-                <Badge
+                  {task.notes ? (
+                    <p
+                      className={cn(
+                        "mt-1 line-clamp-2 text-xs leading-relaxed text-muted-foreground",
+                        isDone && "line-through",
+                      )}
+                    >
+                      {task.notes}
+                    </p>
+                  ) : null}
+                </TableCell>
+                <TableCell
                   className={cn(
-                    "min-w-6 justify-center border-transparent",
-                    priorityBadgeClass(task.priority),
+                    "px-4 py-3 text-muted-foreground",
+                    isDone && "line-through opacity-70",
                   )}
                 >
-                  {task.priority}
-                </Badge>
-              </TableCell>
-              <TableCell>
-                <Badge
-                  className={cn(
-                    "border-transparent",
-                    statusBadgeClass(task.status),
-                  )}
-                >
-                  {statusLabel(task.status)}
-                </Badge>
-              </TableCell>
-              <TableCell className="text-right">
-                <div className="flex justify-end gap-1">
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="icon-sm"
-                    onClick={() => onEdit(task)}
-                    aria-label={`Edit ${task.title}`}
+                  {formatDueDate(task.due_date)}
+                </TableCell>
+                <TableCell className="px-4 py-3">
+                  <Badge
+                    className={cn(
+                      "min-w-7 justify-center border-0 font-semibold shadow-none",
+                      priorityBadgeClass(task.priority),
+                    )}
                   >
-                    <PencilIcon />
-                  </Button>
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="icon-sm"
-                    onClick={() => onDelete(task)}
-                    aria-label={`Delete ${task.title}`}
+                    {task.priority}
+                  </Badge>
+                </TableCell>
+                <TableCell className="px-4 py-3">
+                  <Badge
+                    variant="outline"
+                    className={cn(
+                      "border-transparent font-medium",
+                      statusBadgeClass(task.status),
+                    )}
                   >
-                    <Trash2Icon />
-                  </Button>
-                </div>
-              </TableCell>
-            </TableRow>
-          );
-        })}
-      </TableBody>
-    </Table>
+                    {statusLabel(task.status)}
+                  </Badge>
+                </TableCell>
+                <TableCell className="px-4 py-3 text-right">
+                  <div className="flex justify-end gap-0.5 opacity-100 sm:opacity-80 sm:group-hover:opacity-100">
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon-sm"
+                      className="text-muted-foreground hover:bg-accent hover:text-foreground"
+                      onClick={() => onEdit(task)}
+                      aria-label={`Edit ${task.title}`}
+                    >
+                      <PencilIcon className="size-4" />
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon-sm"
+                      className="text-muted-foreground hover:bg-destructive/10 hover:text-destructive"
+                      onClick={() => onDelete(task)}
+                      aria-label={`Delete ${task.title}`}
+                    >
+                      <Trash2Icon className="size-4" />
+                    </Button>
+                  </div>
+                </TableCell>
+              </TableRow>
+            );
+          })}
+        </TableBody>
+      </Table>
+    </TasksSurface>
   );
 }

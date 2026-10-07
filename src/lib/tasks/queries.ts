@@ -120,7 +120,7 @@ export function priorityBadgeClass(priority: number): string {
 export function statusBadgeClass(status: TaskStatus): string {
   switch (status) {
     case "todo":
-      return "bg-muted text-muted-foreground";
+      return "bg-muted/80 text-muted-foreground";
     case "in_progress":
       return "bg-status-progress/15 text-status-progress";
     case "done":

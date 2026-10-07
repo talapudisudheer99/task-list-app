@@ -2,7 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { PlusIcon, SearchIcon } from "lucide-react";
+import { PlusIcon, SearchIcon, UploadIcon } from "lucide-react";
+import { TasksSurface } from "@/app/tasks/_components/tasks-surface";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -63,82 +64,86 @@ export function TasksToolbar({
   }
 
   return (
-    <div className="flex flex-col gap-3 lg:flex-row lg:flex-wrap lg:items-center">
-      <div className="relative w-full min-w-0 max-w-md lg:flex-1">
-        <SearchIcon
-          className="pointer-events-none absolute top-1/2 left-2.5 size-4 -translate-y-1/2 text-muted-foreground"
-        />
-        <Input
-          type="search"
-          placeholder={TASKS_TOOLBAR.searchPlaceholder}
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          className="h-8 w-full pl-8"
-        />
-      </div>
+    <TasksSurface padded>
+      <div className="flex flex-col gap-4 lg:flex-row lg:flex-wrap lg:items-center">
+        <div className="relative w-full min-w-0 lg:max-w-md lg:flex-1">
+          <SearchIcon
+            className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground"
+            aria-hidden
+          />
+          <Input
+            type="search"
+            placeholder={TASKS_TOOLBAR.searchPlaceholder}
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="h-10 w-full border-border/80 bg-muted/30 pl-9"
+          />
+        </div>
 
-      <div className="flex flex-wrap items-center gap-3">
-        <Select
-          value={filters.status}
-          onValueChange={(value) => {
-            if (value) {
-              updateParam("status", value);
-            }
-          }}
-        >
-          <SelectTrigger className="w-[140px]">
-            <SelectValue>
-              {TASKS_TOOLBAR.statusLabel}:{" "}
-              {filters.status === "all"
-                ? TASKS_TOOLBAR.filterAll
-                : statusLabel(filters.status as TaskStatus)}
-            </SelectValue>
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">{TASKS_TOOLBAR.filterAll}</SelectItem>
-            <SelectItem value="todo">{statusLabel("todo")}</SelectItem>
-            <SelectItem value="in_progress">
-              {statusLabel("in_progress")}
-            </SelectItem>
-            <SelectItem value="done">{statusLabel("done")}</SelectItem>
-          </SelectContent>
-        </Select>
-
-        <Select
-          value={filters.priority === "all" ? "all" : String(filters.priority)}
-          onValueChange={(value) => {
-            if (value) {
-              updateParam("priority", value);
-            }
-          }}
-        >
-          <SelectTrigger className="w-[140px]">
-            <SelectValue>
-              {TASKS_TOOLBAR.priorityLabel}:{" "}
-              {filters.priority === "all"
-                ? TASKS_TOOLBAR.filterAll
-                : filters.priority}
-            </SelectValue>
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">{TASKS_TOOLBAR.filterAll}</SelectItem>
-            {[1, 2, 3, 4, 5].map((n) => (
-              <SelectItem key={n} value={String(n)}>
-                {n}
+        <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+          <Select
+            value={filters.status}
+            onValueChange={(value) => {
+              if (value) {
+                updateParam("status", value);
+              }
+            }}
+          >
+            <SelectTrigger className="h-10 w-[148px] bg-background">
+              <SelectValue>
+                {TASKS_TOOLBAR.statusLabel}:{" "}
+                {filters.status === "all"
+                  ? TASKS_TOOLBAR.filterAll
+                  : statusLabel(filters.status as TaskStatus)}
+              </SelectValue>
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">{TASKS_TOOLBAR.filterAll}</SelectItem>
+              <SelectItem value="todo">{statusLabel("todo")}</SelectItem>
+              <SelectItem value="in_progress">
+                {statusLabel("in_progress")}
               </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+              <SelectItem value="done">{statusLabel("done")}</SelectItem>
+            </SelectContent>
+          </Select>
 
-        <Button type="button" variant="outline" onClick={onImportCsv}>
-          {TASKS_TOOLBAR.importCsv}
-        </Button>
+          <Select
+            value={filters.priority === "all" ? "all" : String(filters.priority)}
+            onValueChange={(value) => {
+              if (value) {
+                updateParam("priority", value);
+              }
+            }}
+          >
+            <SelectTrigger className="h-10 w-[148px] bg-background">
+              <SelectValue>
+                {TASKS_TOOLBAR.priorityLabel}:{" "}
+                {filters.priority === "all"
+                  ? TASKS_TOOLBAR.filterAll
+                  : filters.priority}
+              </SelectValue>
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">{TASKS_TOOLBAR.filterAll}</SelectItem>
+              {[1, 2, 3, 4, 5].map((n) => (
+                <SelectItem key={n} value={String(n)}>
+                  {n}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
 
-        <Button type="button" onClick={onNewTask}>
-          <PlusIcon data-icon="inline-start" />
-          {TASKS_TOOLBAR.newTask}
-        </Button>
+          <Button type="button" variant="outline" className="h-10" onClick={onImportCsv}>
+            <UploadIcon data-icon="inline-start" className="size-4" />
+            {TASKS_TOOLBAR.importCsv}
+          </Button>
+
+          <Button type="button" className="h-10" onClick={onNewTask}>
+            <PlusIcon data-icon="inline-start" className="size-4" />
+            {TASKS_TOOLBAR.newTask}
+          </Button>
+        </div>
       </div>
-    </div>
+    </TasksSurface>
   );
 }

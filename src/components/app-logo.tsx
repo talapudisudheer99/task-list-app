@@ -6,6 +6,8 @@ type AppLogoProps = {
   iconClassName?: string;
   showLabel?: boolean;
   labelClassName?: string;
+  /** White tile on brand panels (e.g. login marketing side). */
+  tileVariant?: "brand" | "onPrimary";
 };
 
 /** Brand mark: indigo tile with list + check (matches public/logo.svg and app/icon.svg). */
@@ -14,7 +16,10 @@ export function AppLogo({
   iconClassName,
   showLabel = false,
   labelClassName,
+  tileVariant = "brand",
 }: AppLogoProps) {
+  const onPrimary = tileVariant === "onPrimary";
+
   return (
     <div className={cn("flex items-center gap-2", className)}>
       <svg
@@ -24,12 +29,17 @@ export function AppLogo({
         className={cn("size-8 shrink-0", iconClassName)}
         aria-hidden
       >
-        <rect width="32" height="32" rx="8" className="fill-primary" />
+        <rect
+          width="32"
+          height="32"
+          rx="8"
+          className={onPrimary ? "fill-primary-foreground" : "fill-primary"}
+        />
         <path
           stroke="currentColor"
           strokeWidth="2"
           strokeLinecap="round"
-          className="text-primary-foreground"
+          className={onPrimary ? "text-primary" : "text-primary-foreground"}
           d="M9 10h14M9 16h10"
         />
         <path
@@ -37,7 +47,7 @@ export function AppLogo({
           strokeWidth="2.5"
           strokeLinecap="round"
           strokeLinejoin="round"
-          className="text-primary-foreground"
+          className={onPrimary ? "text-primary" : "text-primary-foreground"}
           d="M22 20l2 2 4-5"
         />
       </svg>

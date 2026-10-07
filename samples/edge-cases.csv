@@ -1,0 +1,11 @@
+title,due_date,priority,notes
+Buy groceries,2026-10-10,4,"Eggs, fruits, oats"
+Prepare for interview,2026-10-09,5,Revise React and Next.js
+
+,2026-10-12,3,Title is missing
+Pay rent,2026-10-01,high,Monthly rent
+buy groceries ,2026-10-10,2,Same title and date as row 2
+This task title is deliberately far too long to be accepted because the import rules say a title must be two hundred characters or fewer and this sentence keeps going well past that limit to prove the validation works,2026-10-15,2,Title over 200 characters
+Book dentist,2026-02-30,2,February 30 does not exist
+Water plants,2026-10-11,1,"Balcony, both sides"
+Renew bike insurance,2026-10-05,2,Compare quotes
