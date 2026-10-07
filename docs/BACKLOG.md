@@ -19,6 +19,35 @@ no TypeScript/lint errors, committed and pushed, and I can explain it in 2 lines
 | D5 | `due_date` is required in CSV import. | Rule: must be a valid YYYY-MM-DD date. |
 | D6 | Duplicate key = `lower(trim(title))` + `due_date`. Soft-deleted tasks do not count. | Avoids "Buy milk" vs "buy milk " slipping through. |
 | D7 | Import writes in one transaction via a Postgres function (RPC). | All-or-nothing insert; DB re-checks duplicates. |
+| D8 | Priority 1 = low, 5 = urgent. Badge colours: 1 grey, 2 blue, 3 amber, 4 orange, 5 red (theme tokens `priority-1..5`). | Higher number = more important is easiest to read. |
+| D9 | Email confirmation is turned off in Supabase Auth for this demo. | Faster sign-up for reviewers; noted in README as a production change. |
+
+---
+
+## UI guidelines (apply to every story)
+
+Layout reference: a mockup kept outside the repo (not committed: binary file).
+Where the mockup and this list disagree, **this list wins**.
+
+- Theme: use tokens from `src/app/globals.css` only (`bg-primary`, `bg-status-done`,
+  `bg-priority-5`, ...). No hard-coded hex colours. Primary colour is indigo.
+- Components: shadcn/ui from `src/components/ui`. Icons: lucide-react.
+- Header: "Task List" on the left; user email + "Sign out" (outline button) on the right.
+- Tasks page: title "My tasks" + subtitle; toolbar = search, Status filter, Priority filter,
+  "Import CSV" (outline), "New task" (primary).
+- Table columns: done-checkbox, Title (notes preview below in muted text), Due date,
+  Priority badge, Status badge, Actions (edit, delete icons). **No select-all checkbox.**
+- Done tasks: title, notes and date struck through and muted; status badge green.
+- Loading: 4 skeleton rows in the table.
+- Empty: illustration + "No tasks yet" + "New task" button. When filters hide everything:
+  "No tasks match your filters" + "Clear filters".
+- Error: red banner "Failed to load tasks" with a **Try again** button; no empty state below it.
+- Delete: confirm dialog "Delete this task?" with Cancel / Delete (destructive).
+- New / Edit task: dialog with Title*, Notes, Due date, Priority (1–5), Status; field errors
+  shown under the field.
+- Import dialog: file picker, summary line "X imported · Y rejected · Z blank rows skipped",
+  rejected table (Row, Title, Reason), "Download rejected rows", "Close".
+- Sample/demo data: generic tasks only, no company, brand or real person names.
 
 ---
 
