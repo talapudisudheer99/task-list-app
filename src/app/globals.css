@@ -234,14 +234,14 @@
 /* Sonner — match app card + status colours */
 .app-toaster,
 [data-sonner-toaster].app-toaster {
-  --width: 24rem;
+  --width: 18rem;
   font-family: var(--font-sans);
   z-index: 100;
   --normal-bg: var(--card);
   --normal-text: var(--foreground);
   --normal-border: var(--border);
   --toast-close-button-start: unset;
-  --toast-close-button-end: 0.625rem;
+  --toast-close-button-end: 0.5rem;
   --toast-close-button-transform: none;
 }
 
@@ -251,9 +251,9 @@
   isolation: isolate;
   width: var(--width);
   align-items: center;
-  gap: 0.875rem;
-  padding: 0.875rem 2.75rem 0.875rem 0.875rem !important;
-  border-radius: calc(var(--radius) * 1.4);
+  gap: 0.5rem;
+  padding: 0.5rem 2.25rem 0.5rem 0.5rem !important;
+  border-radius: var(--radius);
   border: 1px solid var(--border);
   background-color: var(--card) !important;
   background-image: none !important;
@@ -261,8 +261,8 @@
   -webkit-backdrop-filter: none;
   color: var(--foreground);
   box-shadow:
-    0 12px 32px -8px oklch(0.21 0.02 265 / 0.12),
-    0 4px 12px -4px oklch(0.21 0.02 265 / 0.08);
+    0 8px 20px -8px oklch(0.21 0.02 265 / 0.12),
+    0 2px 8px -4px oklch(0.21 0.02 265 / 0.08);
 }
 
 [data-sonner-toaster].app-toaster [data-sonner-toast].app-toast[data-type="success"] {
@@ -287,16 +287,16 @@
 
 [data-sonner-toaster].app-toaster .app-toast-title,
 [data-sonner-toaster].app-toaster [data-sonner-toast] [data-title] {
-  font-size: 0.875rem;
+  font-size: 0.8125rem;
   font-weight: 600;
-  line-height: 1.35;
+  line-height: 1.3;
   color: var(--foreground) !important;
 }
 
 [data-sonner-toaster].app-toaster .app-toast-description,
 [data-sonner-toaster].app-toaster [data-sonner-toast] [data-description] {
-  font-size: 0.8125rem;
-  line-height: 1.4;
+  font-size: 0.75rem;
+  line-height: 1.35;
   color: var(--muted-foreground) !important;
 }
 
@@ -307,15 +307,15 @@
 }
 
 [data-sonner-toaster].app-toaster
-  [data-sonner-toast][data-front="true"]:not([data-removed="true"])
+  [data-sonner-toast][data-mounted="true"]:not([data-removed="true"])
   > * {
   opacity: 1 !important;
 }
 
 [data-sonner-toaster].app-toaster .app-toast-icon {
   display: flex;
-  height: 2.5rem;
-  width: 2.5rem;
+  height: 1.75rem;
+  width: 1.75rem;
   flex-shrink: 0;
   align-items: center;
   justify-content: center;
@@ -364,17 +364,17 @@
 
 [data-sonner-toaster].app-toaster [data-sonner-toast] [data-close-button] {
   position: absolute !important;
-  top: 0.625rem !important;
-  right: 0.625rem !important;
+  top: 50% !important;
+  right: 0.4rem !important;
   left: auto !important;
   bottom: auto !important;
-  transform: none !important;
+  transform: translateY(-50%) !important;
   display: flex;
-  height: 1.75rem;
-  width: 1.75rem;
+  height: 1.375rem;
+  width: 1.375rem;
   align-items: center;
   justify-content: center;
-  border-radius: calc(var(--radius) * 0.8);
+  border-radius: calc(var(--radius) * 0.7);
   border: 1px solid var(--border);
   background-color: var(--background) !important;
   color: var(--muted-foreground) !important;

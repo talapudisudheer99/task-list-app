@@ -3,7 +3,8 @@
 A small task-list web app with CSV import.
 Each user signs in and sees **only their own tasks** – enforced by Postgres row-level security (RLS), not just app code.
 
-**Demo video:** _add link here_
+**Live demo:** https://task-list-app-rho.vercel.app  
+**Demo video:** https://youtu.be/DIufKqp48aE
 
 ## Features
 
@@ -213,6 +214,3 @@ Recorded in [`docs/BACKLOG.md`](docs/BACKLOG.md). Key ones:
 
 This project was built with AI assistance (Claude for planning, product ownership and review; Cursor for implementation;
 ChatGPT for a UI reference mockup). The complete, unedited session logs are in [`ai-log/`](ai-log/).
-
-
-**Live demo:** https://task-list-app-rho.vercel.app

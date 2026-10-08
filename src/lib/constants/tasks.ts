@@ -95,6 +95,8 @@ export const TASK_TOASTS = {
   created: "Task created",
   updated: "Task updated",
   deleted: "Task deleted",
+  deletedMany: (count: number) =>
+    count === 1 ? "Task deleted" : `${count} tasks deleted`,
   completed: "Task completed",
   markedTodo: "Task marked as to do",
   statusUpdated: "Status updated",

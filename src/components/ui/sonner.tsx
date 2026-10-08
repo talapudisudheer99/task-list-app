@@ -31,33 +31,33 @@ const Toaster = ({ ...props }: ToasterProps) => {
       theme="light"
       className="app-toaster"
       offset={16}
-      gap={12}
-      visibleToasts={4}
+      gap={8}
+      visibleToasts={3}
       expand
       icons={{
         success: (
           <ToastIconWrap variant="success">
-            <CircleCheckIcon className="size-[1.125rem]" strokeWidth={2.5} />
+            <CircleCheckIcon className="size-4" strokeWidth={2.5} />
           </ToastIconWrap>
         ),
         info: (
           <ToastIconWrap variant="info">
-            <InfoIcon className="size-[1.125rem]" strokeWidth={2.5} />
+            <InfoIcon className="size-4" strokeWidth={2.5} />
           </ToastIconWrap>
         ),
         warning: (
           <ToastIconWrap variant="warning">
-            <TriangleAlertIcon className="size-[1.125rem]" strokeWidth={2.5} />
+            <TriangleAlertIcon className="size-4" strokeWidth={2.5} />
           </ToastIconWrap>
         ),
         error: (
           <ToastIconWrap variant="error">
-            <OctagonXIcon className="size-[1.125rem]" strokeWidth={2.5} />
+            <OctagonXIcon className="size-4" strokeWidth={2.5} />
           </ToastIconWrap>
         ),
         loading: (
           <ToastIconWrap variant="loading">
-            <Loader2Icon className="size-[1.125rem] animate-spin" strokeWidth={2.5} />
+            <Loader2Icon className="size-4 animate-spin" strokeWidth={2.5} />
           </ToastIconWrap>
         ),
       }}

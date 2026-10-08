@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { toast } from "sonner";
 import { softDeleteTask } from "@/app/tasks/actions";
+import { toastCountedSuccess } from "@/lib/toast";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -37,7 +38,7 @@ export function DeleteTaskDialog({
     setPending(false);
 
     if (result.ok) {
-      toast.success(TASK_TOASTS.deleted);
+      toastCountedSuccess("task-deleted", TASK_TOASTS.deletedMany);
       onOpenChange(false);
     } else {
       toast.error(result.message);
